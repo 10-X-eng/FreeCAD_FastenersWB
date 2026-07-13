@@ -24,7 +24,7 @@
 #***************************************************************************
 
 import glob
-import subprocess
+import subprocess # nosec
 
 
 updater = "lupdate"
@@ -36,7 +36,7 @@ for pattern in translation_files:
     files.extend(glob.glob(pattern))
 
 cmd = [updater] + files + ["-ts", f"{workbench}.ts"]
-result = subprocess.run(
+result = subprocess.run( # nosec
     cmd,
     capture_output=True,
     text=True,
