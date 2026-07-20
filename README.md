@@ -120,6 +120,9 @@ screwobj = sm.createFastener('ISO7046', 'M6', '8', 'simple')
 </details>
 
 #### Release Notes
+* V0.5.64  20 Jul 2026:  Make fastener attachment nesting aware by @Roy-043.  
+                       - Sort WN14xx group by @Roy-043.  
+                       - Update translatios from crowdin.  
 * V0.5.63  11 Jul 2026:  Update translatios from crowdin.  
 * V0.5.62  30 Jun 2026:  Fix BSP tap and die 3d printing compensation bug by @kruhek.  
                        - Update translatios from crowdin.  
