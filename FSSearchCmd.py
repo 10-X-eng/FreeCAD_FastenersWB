@@ -66,10 +66,10 @@ class _FastenerRow(QtWidgets.QWidget):
         if icon_pixmap and not icon_pixmap.isNull():
             lbl_icon.setPixmap(icon_pixmap)
         else:
-            lbl_icon.setText("\U0001F527")
-            lbl_icon.setStyleSheet(
-                "font-size: 28px; background: #333; border-radius: 2px;"
-            )
+            lbl_icon.setText("\U0001f527")
+            font = lbl_icon.font()
+            font.setPointSize(28)
+            lbl_icon.setFont(font)
         lay.addWidget(lbl_icon, 0, QtCore.Qt.AlignVCenter)
 
         # Description
@@ -80,7 +80,6 @@ class _FastenerRow(QtWidgets.QWidget):
         font = lbl_desc.font()
         font.setPointSize(font.pointSize() + 1)
         lbl_desc.setFont(font)
-        lbl_desc.setStyleSheet("color: #1a1a1a; padding: 2px 0;")
         lay.addWidget(lbl_desc, 1)
 
     def sizeHint(self):
@@ -90,6 +89,7 @@ class _FastenerRow(QtWidgets.QWidget):
         # Ensure minimum height = icon + vertical padding
         min_h = self._icon_size + 16
         return QtCore.QSize(sh.width(), max(sh.height(), min_h))
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 #  Dialog
@@ -122,9 +122,10 @@ class FastenerSearchDialog(QtWidgets.QDialog):
 
         # Title
         title = QtWidgets.QLabel(translate("FastenerSearch", "Search Fasteners"))
-        title.setStyleSheet(
-            "font-size: 18px; font-weight: bold; color: #848484;"
-        )
+        title_font = title.font()
+        title_font.setPointSize(18)
+        title_font.setBold(True)
+        title.setFont(title_font)
         root.addWidget(title)
 
         # Search bar
@@ -133,25 +134,13 @@ class FastenerSearchDialog(QtWidgets.QDialog):
             translate("FastenerSearch", "Type to search by description") + "\u2026"
         )
         self.search_edit.setClearButtonEnabled(True)
-        self.search_edit.setStyleSheet(
-            "QLineEdit {"
-            "  padding: 4px 6px;"
-            "  border: 2px solid #444;"
-            "  border-radius: 2px;"
-            "  background: #bababa;"
-            "  color: #1a1a1a;"
-            "  font-size: 14px;"
-            "  selection-background-color: #5a5a5a;"
-            "}"
-            "QLineEdit:focus { border-color: #6a9fd8; }"
-        )
         root.addWidget(self.search_edit)
 
         # Result count
         self.count_label = QtWidgets.QLabel("")
-        self.count_label.setStyleSheet(
-            "color: #777; font-size: 11px; padding-left: 2px;"
-        )
+        count_font = self.count_label.font()
+        count_font.setPointSize(11)
+        self.count_label.setFont(count_font)
         root.addWidget(self.count_label)
 
         # List
@@ -160,68 +149,20 @@ class FastenerSearchDialog(QtWidgets.QDialog):
         self.list_widget.setUniformItemSizes(False)
         self.list_widget.setIconSize(QtCore.QSize(self.ICON_SIZE, self.ICON_SIZE))
         self.list_widget.setResizeMode(QtWidgets.QListWidget.Adjust)
-        self.list_widget.setStyleSheet(
-            "QListWidget {"
-            "  border: 1px solid #3a3a3a;"
-            "  border-radius: 2px;"
-            "  background: #bababa;"
-            "  padding: 4px;"
-            "  outline: none;"
-            "}"
-            "QListWidget::item {"
-            "  border-radius: 2px;"
-            "  padding: 2px;"
-            "  height: 48px;"
-            "  margin: 1px 2px;"
-            "  color: #1a1a1a;"
-            "}"
-            "QListWidget::item:selected {"
-            "  background: #909090;"
-            "  border: 1px solid #5a7a9a;"
-            "  color: #d0d0d0;"
-            "}"
-            "QListWidget::item:hover {"
-            "  background: #a0a0a0;"
-            "  color: #d0d0d0;"
-            "}"
-        )
         root.addWidget(self.list_widget, 1)
 
         # Buttons
         btn_row = QtWidgets.QHBoxLayout()
         btn_row.addStretch()
 
-        self.insert_btn = QtWidgets.QPushButton(translate("FastenerSearch", "Insert Fastener"))
+        self.insert_btn = QtWidgets.QPushButton(
+            translate("FastenerSearch", "Insert Fastener")
+        )
         self.insert_btn.setEnabled(False)
         self.insert_btn.setFixedHeight(36)
-        self.insert_btn.setStyleSheet(
-            "QPushButton {"
-            "  padding: 6px 24px;"
-            "  background: #3d6b99;"
-            "  color: #fff;"
-            "  border: none;"
-            "  border-radius: 4px;"
-            "  font-weight: bold;"
-            "  font-size: 13px;"
-            "}"
-            "QPushButton:hover  { background: #4a7fb3; }"
-            "QPushButton:pressed { background: #2d5580; }"
-            "QPushButton:disabled { background: #bababa; color: #aaa; }"
-        )
 
         cancel_btn = QtWidgets.QPushButton(translate("FastenerSearch", "Close"))
         cancel_btn.setFixedHeight(36)
-        cancel_btn.setStyleSheet(
-            "QPushButton {"
-            "  padding: 6px 24px;"
-            "  background: #bababa;"
-            "  color: #111;"
-            "  border: none;"
-            "  border-radius: 2px;"
-            "  font-size: 13px;"
-            "}"
-            "QPushButton:hover { background: #aaa; }"
-        )
 
         btn_row.addWidget(self.insert_btn)
         btn_row.addWidget(cancel_btn)
@@ -244,14 +185,16 @@ class FastenerSearchDialog(QtWidgets.QDialog):
         self.insert_btn.setEnabled(False)
         text_lower = text.strip().lower()
         if len(text_lower) < 2:
-            self.count_label.setText(translate("FastenerSearch", "Type at least 2 characters to search"))
+            self.count_label.setText(
+                translate("FastenerSearch", "Type at least 2 characters to search")
+            )
             return
         matched = []
         for ftype, info in FSScrewCommandTable.items():
             desc = info[0]
             group = info[1]
-            cmd_name = 'FS' + ftype
-            icon = os.path.join(iconPath, FSGetIconAlias(ftype) + '.svg')
+            cmd_name = "FS" + ftype
+            icon = os.path.join(iconPath, FSGetIconAlias(ftype) + ".svg")
             # Search against both the menu text, group  and the description
             searchable = (ftype + " " + desc + " " + group).lower()
             text_words = text_lower.split()
@@ -326,21 +269,16 @@ class FSSearchCommand:
         return {
             "Pixmap": icon,
             "MenuText": translate("FastenerSearch", "Search Fasteners"),
-            "ToolTip": (translate(
-                "FastenerSearch", 
-                "Search fasteners by name or description."
-            )),
+            "ToolTip": (
+                translate("FastenerSearch", "Search fasteners by name or description.")
+            ),
         }
 
     def Activated(self):
         # Re-use a single dialog instance; bring it forward if already open
         if FSSearchCommand._dialog is None:
-            FSSearchCommand._dialog = FastenerSearchDialog(
-                FreeCADGui.getMainWindow()
-            )
-            FSSearchCommand._dialog.setAttribute(
-                QtCore.Qt.WA_DeleteOnClose
-            )
+            FSSearchCommand._dialog = FastenerSearchDialog(FreeCADGui.getMainWindow())
+            FSSearchCommand._dialog.setAttribute(QtCore.Qt.WA_DeleteOnClose)
             FSSearchCommand._dialog.destroyed.connect(
                 lambda: setattr(FSSearchCommand, "_dialog", None)
             )
@@ -351,6 +289,7 @@ class FSSearchCommand:
 
     def IsActive(self):
         return True
+
 
 Gui.addCommand("Fasteners_Search", FSSearchCommand())
 FastenerBase.FSCommands.append("Fasteners_Search", "command")
