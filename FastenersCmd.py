@@ -75,6 +75,8 @@ NutParameters = {"Type", "Diameter", "MatchOuter", "Thread", "LeftHanded"}
 WoodInsertParameters = {"Type", "Diameter", "MatchOuter", "Thread", "LeftHanded"}
 HeatInsertParameters = {"Type", "Diameter", "lengthArbitrary", "ExternalDiam", "MatchOuter", 
                         "Thread", "LeftHanded"}
+StandardHeatInsertParameters = {"Type", "Diameter", "Length", "MatchOuter",
+                                "Thread"}
 WasherParameters = {"Type", "Diameter", "MatchOuter"}
 PCBStandoffParameters = {"Type", "Diameter", "MatchOuter", "Thread",
                          "LeftHanded", "ThreadLength", "LenByDiamAndWidth", "LengthCustom", "widthCode"}
@@ -345,6 +347,9 @@ FSScrewCommandTable = {
     # InsertGroup
 
     "IUTHeatInsert": (translate("FastenerCmd", "IUT[A/B/C] Heat Staked Metric Insert"), InsertGroup, HeatInsertParameters),
+    "PEMIUTA": (translate("FastenerCmd", "aluminum straight-wall heat-set insert"), InsertGroup, StandardHeatInsertParameters),
+    "PEMIUTB": (translate("FastenerCmd", "brass straight-wall heat-set insert"), InsertGroup, StandardHeatInsertParameters),
+    "PEMIUTC": (translate("FastenerCmd", "stainless-steel straight-wall heat-set insert"), InsertGroup, StandardHeatInsertParameters),
     "PEMPressNut": (translate("FastenerCmd", "PEM Self Clinching nut"), InsertGroup, PEMPressNutParameters),
     "PEMStandoff": (translate("FastenerCmd", "PEM Self Clinching standoff"), InsertGroup, PEMStandoffParameters),
     "PEMStud": (translate("FastenerCmd", "PEM Self Clinching stud"), InsertGroup, ScrewParameters),
@@ -413,6 +418,11 @@ FatenersStandards = { "ASME", "DIN", "ISO", "SAE", "EN", "GOST", "BSPP", "WN" }
 FastenersStandardMap = {"ScrewTapInch": "ASME", "ScrewDieInch": "ASME", "ThreadedRodInch": "ASME",
                         "ThreadedRod": "DIN", "ScrewTap": "ISO", "ScrewDie": "ISO",
                         "ScrewTapBSPP": "BSPP", "ScrewDieBSPP": "BSPP" }
+FastenersPrettyTypeMap = {
+    "PEMIUTA": "PennEngineering SI IUTA",
+    "PEMIUTB": "PennEngineering SI IUTB",
+    "PEMIUTC": "PennEngineering SI IUTC",
+}
 # fmt: on
 
 
@@ -425,6 +435,8 @@ def FSGetStandardFromType(type):
     return "other"
 
 def FSGetTypePretty(type):
+    if type in FastenersPrettyTypeMap:
+        return FastenersPrettyTypeMap[type]
     if type in FastenersStandardMap:
         return FastenersStandardMap[type] + " " + type
     for std in FatenersStandards:

@@ -43,11 +43,16 @@ FSIconAliases = {
     'ISO12126' : 'ISO7044',
     'ISO15071' : 'EN1662',
     'ISO15072' : 'EN1662',
+    'PEMIUTA': 'IUTHeatInsert',
+    'PEMIUTB': 'IUTHeatInsert',
+    'PEMIUTC': 'IUTHeatInsert',
 }
 
 # a table to reuse similar type standards
 FSTypeAliases = {
     'ISO299' : 'DIN508',
+    'PEMIUTA': 'PEMIUTB',
+    'PEMIUTC': 'PEMIUTB',
 }
 
 def FSGetIconAlias(name):

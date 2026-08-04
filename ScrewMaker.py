@@ -360,6 +360,7 @@ screwTables = {
     "PCBStandoff": ("Standoff", "makePCBStandoff"),
     "PCBSpacer": ("Spacer", "makePCBSpacer"),
     "IUTHeatInsert": ("Insert", "makeHeatInsert"),
+    "PEMIUTB": ("Insert", "makeStandardHeatInsert"),
     "DIN471": ("RetainingRing", "makeExternalRetainingRing"),
     "DIN472": ("RetainingRing", "makeInternalRetainingRing"),
     "DIN6799": ("RetainingRing", "makeEClip"),
@@ -418,6 +419,7 @@ class FSScrewMaker(Screw):
 
     def FindClosest(self, type, diam, len, width=None):
         """Find closest standard screw to given parameters"""
+        type = FSGetTypeAlias(type)
         if type not in screwTables:
             return diam, len, width
 
@@ -458,6 +460,7 @@ class FSScrewMaker(Screw):
 
     def AutoDiameter(self, type, holeObj, baseobj=None, matchOuter=False):
         """Calculate screw diameter automatically based on given hole"""
+        type = FSGetTypeAlias(type)
         # this function is also used to assign the default screw diameter
         if baseobj is not None and baseobj.Name.startswith("Washer"):
             matchOuter = True
@@ -470,7 +473,9 @@ class FSScrewMaker(Screw):
         if is_attached and not is_retaining_ring:
             d = holeObj.Curve.Radius * 2
             table = FsData[type + "def"]
-            tablepos = self.GetTablePos(type, 'csh_diam')
+            tablepos = self.GetTablePos(type, 'hole_dia')
+            if tablepos == -1:
+                tablepos = self.GetTablePos(type, 'csh_diam')
             mindif = 100000.0
             dif = mindif - 0.001
             for m in table:
@@ -629,11 +634,13 @@ class FSScrewMaker(Screw):
         return pitchlist
 
     def GetTablePos(self, type, name):
+        type = FSGetTypeAlias(type)
         titles = FsTitles[type + 'def']
         if name not in titles:
             return -1
         return titles.index(name)
     def GetTableProperty(self, type, diam, property, default_val):
+        type = FSGetTypeAlias(type)
         tablepos = self.GetTablePos(type, property)
         FreeCAD.Console.PrintLog("Found pos for " + property + ": " + str(tablepos) + "\n")
         if (tablepos < 0):
