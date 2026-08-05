@@ -62,5 +62,12 @@ def makeShoulderScrew(self, fa):
     # add modelled threads if needed
     if fa.Thread:
         thread_cutter = self.CreateBlindThreadCutter(d2, P, l2)
+        # CreateBlindThreadCutter deliberately stops its lead-out P/10 below
+        # Z=0.  Shoulder screws place the thread-to-shoulder transition exactly
+        # at Z=0, so using the unshifted cutter leaves a coincident sliver at
+        # that transition and OCCT returns an invalid compound.  Bring the
+        # cutter's lead-out to the actual transition plane, as the shoulder
+        # profile requires.
+        thread_cutter.translate(Base.Vector(0.0, 0.0, P * 0.1))
         screw = screw.cut(thread_cutter)
     return screw
